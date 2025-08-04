@@ -63,7 +63,7 @@ exports.getCandidatesById = async (request, response) => {
 
 exports.updateCandidate = async (request, response) => {
   const { id } = request.params;
-  const { field, value } = request.body;
+  const updatePayload = request.body;
 
   if (!id) {
     return response.status(400).json({
@@ -81,7 +81,9 @@ exports.updateCandidate = async (request, response) => {
       });
     }
 
-    candidate[field] = value;
+    Object.keys(updatePayload).forEach((key) => {
+      candidate[key] = updatePayload[key];
+    });
     await candidate.save();
 
     response.status(200).json({
