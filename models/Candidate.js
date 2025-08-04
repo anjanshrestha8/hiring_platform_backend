@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const Candidate = sequelize.define("Candidate",
+const Candidate = sequelize.define("Candidates",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -54,6 +54,14 @@ const Candidate = sequelize.define("Candidate",
       type: DataTypes.ENUM("In Progress", "Rejected", "Selected"),
       defaultValue: "In Progress",
     },
+    jobId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'jobs',
+        key:'id'
+      }
+    }
   },
   {
     timestamps: true
