@@ -52,7 +52,7 @@ exports.getCandidatesById = async (request, response) => {
     const candidate = await Candidate.findByPk(id,{
       include: {
         model: Job,
-        attributes: ['title']
+        attributes: ['title','location','requirements']
       }
     });
     if (!candidate) {

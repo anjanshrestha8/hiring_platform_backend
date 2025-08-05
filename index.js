@@ -8,6 +8,7 @@ require("./models");
 const sequelize = require('./config/db');
 const candidateRoutes = require("./routes/candidateRoutes");
 const jobRoutes = require("./routes/jobRoutes")
+const PORT = process.env.SERVER_PORT || 5000
 
 sequelize.authenticate()
   .then(()=>console.log("Database is connected sucessfully!!!!!"))
@@ -17,7 +18,6 @@ sequelize.sync()
   .then(()=>console.log("Database is synced"))
   .catch(error => console.error("Database failed to sync:",error))
 
-const PORT = process.env.SERVER_PORT || 5000
 app.use(cors());
 app.use(express.json());
 
