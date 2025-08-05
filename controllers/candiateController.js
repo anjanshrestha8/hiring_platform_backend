@@ -1,11 +1,11 @@
-const { Candidate, Job } = require("../models/index");
+const { Candidate, Job } = require('../models/index');
 
 exports.createCandidate = async (request, response) => {
   try {
     const candidate = await Candidate.create(request.body);
     response.status(200).json({
       data: candidate,
-      message: 'Candiate is created sucessfully.',
+      message: 'Candidate is created sucessfully.',
     });
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
@@ -21,8 +21,8 @@ exports.getAllCandidates = async (request, response) => {
     const candidates = await Candidate.findAll({
       include: {
         model: Job,
-        attributes: ['title']
-      }
+        attributes: ['title'],
+      },
     });
     if (candidates.length < 1) {
       response.status(200).json({
@@ -32,7 +32,7 @@ exports.getAllCandidates = async (request, response) => {
     }
     response.status(200).json({
       data: candidates,
-      message: 'All candiates are displayed.',
+      message: 'All candidates are displayed.',
     });
   } catch (error) {
     response.status(500).json({ error: 'Internal server error.' });
@@ -49,11 +49,19 @@ exports.getCandidatesById = async (request, response) => {
     });
   }
   try {
-    const candidate = await Candidate.findByPk(id,{
+    const candidate = await Candidate.findByPk(id, {
       include: {
         model: Job,
-        attributes: ['title','location','requirements']
-      }
+        attributes: [
+          'title',
+          'location',
+          'requirements',
+          'type',
+          'company',
+          'salary',
+          'posted',
+        ],
+      },
     });
     if (!candidate) {
       response.status(404).json({
