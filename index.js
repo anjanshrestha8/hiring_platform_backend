@@ -8,6 +8,7 @@ require("./models");
 const sequelize = require('./config/db');
 const candidateRoutes = require("./routes/candidateRoutes");
 const jobRoutes = require("./routes/jobRoutes")
+const EmailLog = require("./models/Email");
 const PORT = process.env.SERVER_PORT || 5000
 
 sequelize.authenticate()

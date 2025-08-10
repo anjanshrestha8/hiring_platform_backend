@@ -1,18 +1,48 @@
 const { Candidate, Job } = require('../models/index');
+const sendMail = require('../utils/mailer');
 
-exports.createCandidate = async (request, response) => {
+exports.applyForJob = async (request, response) => {
+   const { name, email,jobId } = request.body;
+   console.log("thik xa nee",jobId);
+
+   const job = await Job.findByPk(jobId);
+   if (!job) {
+    return response.status(404).json({ error: 'Job not found' });
+   }
+   console.log({job})
+
   try {
     const candidate = await Candidate.create(request.body);
-    response.status(200).json({
-      data: candidate,
-      message: 'Candidate is created sucessfully.',
-    });
+      await sendMail({
+        to: 'shresthaanjann17@gmail.com',
+        subject: `New Candidate Applied for ${job.title}`,
+        text: `${name} has applied for the position of ${job.title}.`,
+        html: `<p><strong>${name}</strong> has applied for the job <strong>${job.title}</strong>.</p>`,
+        // candidateId: candidate.id,
+        // jobId: job.id,
+      });
+
+      await sendMail({
+        to: email,
+        subject: `Your application for ${job.title} is received`,
+        text: `Hi ${name}, your application for ${job.title} has been successfully received.`,
+        html: `<p>Hi <strong>${name}</strong>,<br/>We’ve received your application for the role of <strong>${job.title}</strong>. Thank you!</p>`,
+        // candidateId: candidate.id,
+        // jobId: job.id,
+      });
+          
+    response.status(201).json(
+      {
+        message: "Application submitted and emails sent",
+        data: candidate,
+      });
   } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
+    if (error.name === "SequelizeValidationError") {
       const errors = error.errors.map((e) => e.message);
       return response.status(400).json({ errors });
     }
-    response.status(500).json({ error: 'Internal server error.' });
+     console.error(error);
+    response.status(500).json({ error: "Internal server error." });
   }
 };
 
