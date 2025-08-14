@@ -1,7 +1,8 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/db");
 
-const Candidate = sequelize.define("Candidates",
+const Candidate = sequelize.define(
+  "Candidates",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -11,23 +12,16 @@ const Candidate = sequelize.define("Candidates",
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
+      validate: { notEmpty: true },
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        isEmail: true,
-      },
+      validate: { isEmail: true },
     },
-    cvLink: {
+    cvFilePath: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        isUrl: true,
-      },
     },
     currentRound: {
       type: DataTypes.ENUM(
@@ -57,14 +51,10 @@ const Candidate = sequelize.define("Candidates",
     jobId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'jobs',
-        key:'id'
-      }
-    }
+      references: { model: "jobs", key: "id" },
+    },
   },
-  {
-    timestamps: true
-  });
+  { timestamps: true }
+);
 
 module.exports = Candidate;
