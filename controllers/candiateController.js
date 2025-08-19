@@ -77,7 +77,6 @@ exports.getAllCandidates = async (request, response) => {
 
 exports.getCandidatesById = async (request, response) => {
   const id = request.params.id;
-
   if (!id) {
     response.status(400).json({
       data: [],
@@ -99,6 +98,7 @@ exports.getCandidatesById = async (request, response) => {
         ],
       },
     });
+
     if (!candidate) {
       response.status(404).json({
         data: [],
@@ -106,14 +106,23 @@ exports.getCandidatesById = async (request, response) => {
       });
     }
 
+    const cvLink = candidate.cvLink
+      ? `${request.protocol}://${request.get("host")}/${candidate.cvLink}`
+      : null;
+
     response.status(200).json({
-      data: candidate,
-      message: "Candidate is found!!!!",
+      message: "Candidate fetched successfully",
+      data: {
+        ...candidate.toJSON(),
+        cvLink,
+      },
     });
   } catch (error) {
-    response.status(500).json({ error: "Internal server error." });
+    console.error(error);
+    response.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 exports.updateCandidate = async (request, response) => {
   const { id } = request.params;

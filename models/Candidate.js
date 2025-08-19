@@ -19,7 +19,7 @@ const Candidate = sequelize.define(
       allowNull: false,
       validate: { isEmail: true },
     },
-    cvFilePath: {
+    cvLink: {
       type: DataTypes.STRING,
       allowNull: false,
     },

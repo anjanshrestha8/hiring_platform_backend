@@ -11,6 +11,9 @@ const jobRoutes = require("./routes/jobRoutes")
 const EmailLog = require("./models/Email");
 const PORT = process.env.SERVER_PORT || 5000
 
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 sequelize.authenticate()
   .then(()=>console.log("Database is connected sucessfully!!!!!"))
   .catch(error => console.error('Database failed to connect.....:(', error));
