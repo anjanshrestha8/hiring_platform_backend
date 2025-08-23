@@ -1,6 +1,7 @@
 require("dotenv").config();
-const { Candidate, Job } = require("../models/index");
+const { Candidate, Job, AiScreening } = require("../models/index");
 const sendMail = require("../utils/mailer");
+const screenCV = require("../services/aiScreeningService");
 
 exports.applyForJob = async (request, response) => {
   const { name, email, jobId } = request.body;
@@ -157,5 +158,58 @@ exports.updateCandidate = async (request, response) => {
     response.status(500).json({
       error: "Internal server error.",
     });
+  }
+};
+
+exports.runAIScreening = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1️⃣ Get candidate
+    const candidate = await Candidate.findByPk(id);
+    if (!candidate)
+      return res.status(404).json({ error: "Candidate not found" });
+
+    // 2️⃣ Run AI screening
+    const aiResult = await screenCV(candidate);
+
+    console.log(aiResult);
+
+    console.log(
+      aiResult.score,
+      aiResult.decision,
+      aiResult.strengths,
+      aiResult.weaknesses
+    );
+
+    // 3️⃣ Save AI feedback in AiScreenings table
+    const aiRecord = await AiScreening.create({
+      candidateId: candidate.id,
+      score: aiResult.score,
+      decision: aiResult.decision,
+      feedback: `Strengths: ${aiResult.strengths.join(
+        ", "
+      )} | Weaknesses: ${aiResult.weaknesses.join(", ")}`,
+    });
+
+    // 4️⃣ Update candidate CV status
+    await candidate.update({
+      cvStatus: aiResult.decision === "Pass" ? "Passed" : "Failed",
+    });
+
+    // 5️⃣ Send email to candidate
+    await sendMail({
+      to: candidate.email,
+      subject: `AI Screening Result for ${candidate.name}`,
+      text: `Your CV has been evaluated. Decision: ${aiResult.decision}, Score: ${aiResult.score}`,
+    });
+
+    res.status(200).json({
+      message: "AI screening completed",
+      aiRecord,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 };

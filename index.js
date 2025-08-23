@@ -12,7 +12,17 @@ const EmailLog = require("./models/Email");
 const PORT = process.env.SERVER_PORT || 5000
 
 const path = require("path");
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: (res, path) => {
+      if (path.endsWith(".pdf")) {
+        res.setHeader("Content-Type", "application/pdf");
+      }
+    },
+  })
+);
+
 
 sequelize.authenticate()
   .then(()=>console.log("Database is connected sucessfully!!!!!"))
@@ -22,7 +32,14 @@ sequelize.sync()
   .then(()=>console.log("Database is synced"))
   .catch(error => console.error("Database failed to sync:",error))
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
 app.use(express.json());
 
 app.use("/api/candidates", candidateRoutes);
