@@ -6,12 +6,22 @@ dotenv.config();
 require("./models");
 
 const sequelize = require('./config/db');
-const candidateRoutes = require("./routes/candidateRoutes");
-const jobRoutes = require("./routes/jobRoutes")
-const EmailLog = require("./models/Email");
+const routes = require("./routes/index");
 const PORT = process.env.SERVER_PORT || 5000
 
-const path = require("path");
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    methods: ["GET", "POST","PATCH"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
+app.use(express.json());
+
+app.use("/api", routes);
+
 app.use(
   "/uploads",
   express.static(path.join(__dirname, "uploads"), {
@@ -32,18 +42,6 @@ sequelize.sync()
   .then(()=>console.log("Database is synced"))
   .catch(error => console.error("Database failed to sync:",error))
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
-
-app.use(express.json());
-
-app.use("/api/candidates", candidateRoutes);
-app.use("/api/jobs", jobRoutes);
 
 app.listen(PORT,()=>{
   console.log(`Server is running at ${PORT}..........`)
