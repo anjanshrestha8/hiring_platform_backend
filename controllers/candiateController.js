@@ -20,7 +20,7 @@ exports.applyForJob = async (request, response) => {
       name,
       email,
       jobId,
-      cvFilePath: request.file.path,
+      cvLink: request.file.path,
     });
 
     // Email to HR
@@ -161,16 +161,14 @@ exports.updateCandidate = async (request, response) => {
   }
 };
 
-exports.runAIScreening = async (req, res) => {
+exports.runAIScreening = async (request, response) => {
   try {
-    const { id } = req.params;
+    const { id } = request.params;
 
-    // 1️⃣ Get candidate
     const candidate = await Candidate.findByPk(id);
     if (!candidate)
       return res.status(404).json({ error: "Candidate not found" });
 
-    // 2️⃣ Run AI screening
     const aiResult = await screenCV(candidate);
 
     console.log(aiResult);
@@ -182,7 +180,6 @@ exports.runAIScreening = async (req, res) => {
       aiResult.weaknesses
     );
 
-    // 3️⃣ Save AI feedback in AiScreenings table
     const aiRecord = await AiScreening.create({
       candidateId: candidate.id,
       score: aiResult.score,
@@ -193,23 +190,23 @@ exports.runAIScreening = async (req, res) => {
     });
 
     // 4️⃣ Update candidate CV status
-    await candidate.update({
-      cvStatus: aiResult.decision === "Pass" ? "Passed" : "Failed",
-    });
+    // await candidate.update({
+    //   cvStatus: aiResult.decision === "Pass" ? "Passed" : "Failed",
+    // });
 
     // 5️⃣ Send email to candidate
-    await sendMail({
-      to: candidate.email,
-      subject: `AI Screening Result for ${candidate.name}`,
-      text: `Your CV has been evaluated. Decision: ${aiResult.decision}, Score: ${aiResult.score}`,
-    });
+    // await sendMail({
+    //   to: candidate.email,
+    //   subject: `AI Screening Result for ${candidate.name}`,
+    //   text: `Your CV has been evaluated. Decision: ${aiResult.decision}, Score: ${aiResult.score}`,
+    // });
 
-    res.status(200).json({
+    response.status(200).json({
       message: "AI screening completed",
       aiRecord,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    response.status(500).json({ error: err.message });
   }
 };
