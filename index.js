@@ -9,6 +9,7 @@ const sequelize = require('./config/db');
 const routes = require("./routes/index");
 const PORT = process.env.SERVER_PORT || 5000
 
+const path = require('path')
 
 app.use(
   cors({
