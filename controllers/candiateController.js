@@ -171,15 +171,6 @@ exports.runAIScreening = async (request, response) => {
 
     const aiResult = await screenCV(candidate);
 
-    console.log(aiResult);
-
-    console.log(
-      aiResult.score,
-      aiResult.decision,
-      aiResult.strengths,
-      aiResult.weaknesses
-    );
-
     const aiRecord = await AiScreening.create({
       candidateId: candidate.id,
       score: aiResult.score,
@@ -189,12 +180,12 @@ exports.runAIScreening = async (request, response) => {
       )} | Weaknesses: ${aiResult.weaknesses.join(", ")}`,
     });
 
-    // 4️⃣ Update candidate CV status
-    // await candidate.update({
-    //   cvStatus: aiResult.decision === "Pass" ? "Passed" : "Failed",
-    // });
+    await candidate.update({
+      cvStatus: aiResult.decision === "Pass" ? "Passed" : "Failed",
+      currentRound:
+        aiResult.decision === "Pass" ? "Technical Interview" : "Failed",
+    });
 
-    // 5️⃣ Send email to candidate
     // await sendMail({
     //   to: candidate.email,
     //   subject: `AI Screening Result for ${candidate.name}`,
