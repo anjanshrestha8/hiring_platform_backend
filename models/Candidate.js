@@ -1,8 +1,8 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/db");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
 const Candidate = sequelize.define(
-  "Candidates",
+  'Candidates',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -19,39 +19,43 @@ const Candidate = sequelize.define(
       allowNull: false,
       validate: { isEmail: true },
     },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     cvLink: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     currentRound: {
       type: DataTypes.ENUM(
-        "CV Screening",
-        "Technical Interview",
-        "HR Interview",
-        "Completed"
+        'CV Screening',
+        'Technical Interview',
+        'HR Interview',
+        'Completed'
       ),
-      defaultValue: "CV Screening",
+      defaultValue: 'CV Screening',
     },
     cvStatus: {
-      type: DataTypes.ENUM("Pending", "Passed", "Failed"),
-      defaultValue: "Pending",
+      type: DataTypes.ENUM('Pending', 'Passed', 'Failed'),
+      defaultValue: 'Pending',
     },
     techStatus: {
-      type: DataTypes.ENUM("Pending", "Passed", "Failed"),
-      defaultValue: "Pending",
+      type: DataTypes.ENUM('Pending', 'Passed', 'Failed'),
+      defaultValue: 'Pending',
     },
     hrStatus: {
-      type: DataTypes.ENUM("Pending", "Passed", "Failed"),
-      defaultValue: "Pending",
+      type: DataTypes.ENUM('Pending', 'Passed', 'Failed'),
+      defaultValue: 'Pending',
     },
     overallStatus: {
-      type: DataTypes.ENUM("In Progress", "Rejected", "Selected"),
-      defaultValue: "In Progress",
+      type: DataTypes.ENUM('In Progress', 'Rejected', 'Selected'),
+      defaultValue: 'In Progress',
     },
     jobId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: "jobs", key: "id" },
+      references: { model: 'jobs', key: 'id' },
     },
   },
   { timestamps: true }
